@@ -32,7 +32,7 @@ Authors@R: c(
     family = "Eli Lilly and Company",
     role = "cph"
         )) 
-Imports: 'reshape2', 'cubature', 'MASS', 'pracma'
+Imports: reshape2, cubature, MASS, pracma
 Description: Estimate the causal treatment effect for subjects that can adhere to one or both
   treatments. Given longitudinal data with missing observations, consistent causal effects are 
   calculated. Unobserved potential outcomes are estimated through direct integration. 
@@ -41,5 +41,5 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1
 Suggests: 
-    'testthat (>= 3.0.0)'
+    testthat (>= 3.0.0)
 Config/testthat/edition: 3
