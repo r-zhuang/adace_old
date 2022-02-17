@@ -1,0 +1,43 @@
+Package: adace
+Title: Estimatior of the Adherer Average Causal Effect
+Version: 1.0.0
+Authors@R: c(
+  person(
+    given = "Jiaxun",
+    family = "Chen",
+    role = "aut"
+        ),
+  person(
+    given = "Rui",
+    family = "Jin",
+    role = "aut"
+       ),
+  person(
+    given = "Yongming",
+    family = "Qu",
+    role = "aut"
+        ),
+  person(
+    given = "Run",
+    family = "Zhuang",
+    role = c("aut", "cre"),
+    email = "capecod0321@gmail.com"
+        ),
+  person(
+    given = "Ying",
+    family = "Zhang",
+    role = "aut"
+        ),
+  person(
+    family = "Eli Lilly and Company",
+    role = "cph"
+        )) 
+Imports: reshape2, cubature, MASS, pracma
+Description: Estimate treatment effect for patients that can adhere to one or both treatments.
+License: GPL (>= 3)
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.1
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
