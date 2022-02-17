@@ -1,5 +1,5 @@
 Package: adace
-Title: Estimater of the Adherer Average Causal Effect
+Title: Estimator of the Adherer Average Causal Effect
 Version: 1.0.1
 Authors@R: c(
   person(
@@ -21,7 +21,7 @@ Authors@R: c(
     given = "Run",
     family = "Zhuang",
     role = c("aut", "cre"),
-    email = "rzhuang@purdue.edu"
+    email = "capecod0321@gmail.com"
         ),
   person(
     given = "Ying",
@@ -38,7 +38,6 @@ Description: Estimate the causal treatment effect for subjects that can adhere t
   calculated. Unobserved potential outcomes are estimated through direct integration. 
 License: GPL (>= 3)
 Encoding: UTF-8
-LazyData: true
 RoxygenNote: 7.1.1
 Suggests: 
     testthat (>= 3.0.0)
