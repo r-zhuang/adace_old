@@ -1,5 +1,5 @@
 Package: adace
-Title: Estimatior of the Adherer Average Causal Effect
+Title: Estimater of the Adherer Average Causal Effect
 Version: 1.0.0
 Authors@R: c(
   person(
