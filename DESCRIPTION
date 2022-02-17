@@ -1,6 +1,6 @@
 Package: adace
 Title: Estimater of the Adherer Average Causal Effect
-Version: 1.0.0
+Version: 1.0.1
 Authors@R: c(
   person(
     given = "Jiaxun",
@@ -32,12 +32,14 @@ Authors@R: c(
     family = "Eli Lilly and Company",
     role = "cph"
         )) 
-Imports: reshape2, cubature, MASS, pracma
-Description: Estimate treatment effect for patients that can adhere to one or both treatments.
+Imports: 'reshape2', 'cubature', 'MASS', 'pracma'
+Description: Estimate the causal treatment effect for subjects that can adhere to one or both
+  treatments. Given longitudinal data with missing observations, consistent causal effects are 
+  calculated. Unobserved potential outcomes are estimated through direct integration. 
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1
 Suggests: 
-    testthat (>= 3.0.0)
+    'testthat (>= 3.0.0)'
 Config/testthat/edition: 3
