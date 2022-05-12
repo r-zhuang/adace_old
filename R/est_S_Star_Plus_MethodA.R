@@ -16,8 +16,8 @@
 #' can affect the probability of adherence. For each matrix, the structure
 #' is the same as variable X.
 #' @param Y Numeric vector of the final outcome (E.g., primary endpoint).
-#' @param T Numeric vector of treatment assignment. T=0 for the control group
-#' and T =1 for the experimental treatment group.
+#' @param TRT Numeric vector of treatment assignment. TRT=0 for the control
+#' group and TRT =1 for the experimental treatment group.
 #'
 #' @return A list containing the following components:
 #'   \item{trt_diff}{Estimate of treatment difference for S_{++} using Method A}
@@ -85,24 +85,24 @@
 #'  gamma3 = c(1, -0.1, 0.2, 0.2, 0.2, 0.2, rep(-2.5/5,5))   #setting 1
 #'  sd_z_x = 0.4
 #'  X = mvrnorm(n, mu=c(1,5,6,7,8), Sigma=diag(1,5))
-#'  T = rbinom(n, size = 1,  prob = 0.5)
+#'  TRT = rbinom(n, size = 1,  prob = 0.5)
 #'  Z0_1 = alpha1[1,]+(X%*%alpha1[2:6,])           + mvrnorm(n, mu = rep(0,3),
 #'  Sigma = diag(sd_z_x,3))
 #'  Z1_1 = alpha1[1,]+(X%*%alpha1[2:6,])+alpha1[7,] + mvrnorm(n, mu = rep(0,3),
 #'  Sigma = diag(sd_z_x,3))
-#'  Z_1  = Z1_1 * T+Z0_1 * (1-T)
+#'  Z_1  = Z1_1 * TRT+Z0_1 * (1-TRT)
 #'
 #'  Z0_2 = alpha2[1,]+(X%*%alpha2[2:6,])           + mvrnorm(n, mu = rep(0,4),
 #'  Sigma = diag(sd_z_x,4))
 #'  Z1_2 = alpha2[1,]+(X%*%alpha2[2:6,])+alpha2[7,] + mvrnorm(n, mu = rep(0,4),
 #'  Sigma = diag(sd_z_x,4))
-#'  Z_2  = Z1_2 * T + Z0_2 * (1-T)
+#'  Z_2  = Z1_2 * TRT + Z0_2 * (1-TRT)
 #'
 #'  Z0_3 = alpha3[1,]+(X%*%alpha3[2:6,])           + mvrnorm(n, mu = rep(0,5),
 #'  Sigma = diag(sd_z_x,5))
 #'  Z1_3 = alpha3[1,]+(X%*%alpha3[2:6,])+alpha3[7,] + mvrnorm(n, mu = rep(0,5),
 #'  Sigma = diag(sd_z_x,5))
-#'  Z_3  = Z1_3 * T + Z0_3 * (1-T)
+#'  Z_3  = Z1_3 * TRT + Z0_3 * (1-TRT)
 #'  Z = list(Z_1, Z_2, Z_3)
 #'  Y0 = (beta[1]+(X %*% beta[2:6]) + Z0_1 %*% matrix(beta[7:9], ncol = 1) +
 #'  Z0_2 %*% matrix(beta[10:13], ncol = 1) + Z0_3 %*% beta[14:18] +
@@ -110,32 +110,32 @@
 #'  Y1 = (beta[1] + (X %*% beta[2:6]) + Z1_1 %*% matrix(beta[7:9], ncol = 1) +
 #'  Z1_2 %*% matrix(beta[10:13], ncol = 1) + Z1_3 %*% beta[14:18] + beta_T +
 #'  rnorm(n, mean = 0, sd = 0.3))[,1]
-#'  Y  = Y1 * T + Y0 * (1 - T)
+#'  Y  = Y1 * TRT + Y0 * (1 - TRT)
 #'
 #'  A0_1 = rbinom(n, size = 1, prob = 1 / (1 + exp(-(gamma1[1] +
 #'  (X %*% gamma1[2:6]) + Z0_1 %*% matrix(gamma1[7:9], ncol = 1))[,1])))
 #'  A1_1 = rbinom(n, size = 1, prob = 1/(1 + exp(-(gamma1[1] +
 #'  (X %*% gamma1[2:6]) + Z1_1 %*% matrix(gamma1[7:9], ncol = 1))[,1])))
-#'  A_1  = A1_1 * T + A0_1 * (1 - T)
+#'  A_1  = A1_1 * TRT + A0_1 * (1 - TRT)
 #'
 #'  A0_2 = rbinom(n, size = 1, prob = 1/(1 + exp(-(gamma2[1] +
 #'  (X %*% gamma2[2:6]) + Z0_2 %*% matrix(gamma2[7:10], ncol = 1))[,1]))) * A0_1
 #'  A1_2 = rbinom(n, size = 1, prob = 1/(1 + exp(-(gamma2[1] +
 #'  (X %*% gamma2[2:6]) + Z1_2 %*% matrix(gamma2[7:10], ncol = 1))[,1]))) * A1_1
-#'  A_2  = A1_2 * T + A0_2 * (1 - T)
+#'  A_2  = A1_2 * TRT + A0_2 * (1 - TRT)
 #'
 #'  A0_3 = rbinom(n, size = 1, prob = 1/(1 + exp(-(gamma3[1] +
 #'  (X %*% gamma3[2:6]) + Z0_3 %*% matrix(gamma3[7:11], ncol = 1))[,1]))) * A0_2
 #'  A1_3 = rbinom(n, size = 1, prob = 1/(1 + exp(-(gamma3[1] +
 #'  (X %*% gamma3[2:6]) + Z1_3 %*% matrix(gamma3[7:11], ncol = 1))[,1]))) * A1_2
-#'  A_3  = A1_3 * T + A0_3 * (1 - T)
+#'  A_3  = A1_3 * TRT + A0_3 * (1 - TRT)
 #'  A = cbind(A_1, A_2, A_3)
 #'
 #'  Z[[2]][A_1 == 0] <- NA
 #'  Z[[3]][A_2 == 0] <- NA
 #'  Y[A_3 == 0]   <- NA
 #'  # estimate the treatment difference
-#'  fit <- est_S_Star_Plus_MethodA(X, A, Z, Y, T)
+#'  fit <- est_S_Star_Plus_MethodA(X, A, Z, Y, TRT)
 #'  fit
 #'  # Calculate the true values
 #'  true1 =  mean(Y1[A1_3==1])
@@ -146,11 +146,11 @@
 #'  true_d
 #'
 #' @export
-est_S_Star_Plus_MethodA <- function(X, A, Z, Y, T) { # nolint
+est_S_Star_Plus_MethodA <- function(X, A, Z, Y, TRT) { # nolint
   res1 <- res0 <- res <- NULL
   se1 <- se0 <- se <- NULL
   Y <- as.numeric(Y)  # nolint
-  T <- as.numeric(T) # nolint
+  TRT <- as.numeric(TRT) # nolint
   X <- matrix(X, nrow = length(Y))  # nolint
   A <- matrix(A, nrow = length(Y)) # nolint
   # Standardize X
@@ -167,7 +167,7 @@ est_S_Star_Plus_MethodA <- function(X, A, Z, Y, T) { # nolint
     colnames(Z[[i]]) <- paste("Z_", i, "_", 1:dim(Z[[i]])[2], sep = "")
   }
   z_cbind <- do.call(cbind, Z)
-  data <- data.frame(X, T, z_cbind, Y, A)
+  data <- data.frame(X, TRT, z_cbind, Y, A)
 
   models_z_x <- list()
   cov_z_x <- list()
@@ -176,7 +176,7 @@ est_S_Star_Plus_MethodA <- function(X, A, Z, Y, T) { # nolint
     Z_id <- paste("Z_", i, sep = "")  # nolint
     form <- paste("cbind(", paste(colnames(z_cbind)[grep(Z_id,
                   colnames(z_cbind))], collapse = ","), ")~",
-                  paste(c(x_col_names, "T"), collapse = "+"), sep = "")
+                  paste(c(x_col_names, "TRT"), collapse = "+"), sep = "")
     models_z_x[[i]] <- lm(form, data = data.frame(data))
     if (dim(Z[[i]])[2] > 1) {
       cov_z_x[[i]] <- cov(models_z_x[[i]]$residuals)
@@ -189,14 +189,14 @@ est_S_Star_Plus_MethodA <- function(X, A, Z, Y, T) { # nolint
                         collapse = "+"), "+", paste(colnames(z_cbind), sep = "",
                         collapse = "+"), sep = "")
   fit_y0_x_z0 <- lm(model_y0_x_z0,
-                    data = data[T == 0 & A[, n_time_points] == 1, ])
+                    data = data[TRT == 0 & A[, n_time_points] == 1, ])
   psi0_x_z0 <- predict(fit_y0_x_z0, newdata = data)
   beta0_hat <- c(fit_y0_x_z0$coef)
   # Predict Z using models.Z.X
   Zs0_pred <- list()  # nolint
   for (i in 1:n_time_points) {
     Zs0_pred[[i]] <- predict(models_z_x[[i]],
-                             newdata = data.frame(X, T = rep(0, nrow(X))))
+                             newdata = data.frame(X, TRT = rep(0, nrow(X))))
     if (!is.matrix(Zs0_pred[[i]])) {
       temp <- matrix(Zs0_pred[[i]], ncol = 1)
       colnames(temp) <- colnames(Z[[i]])
@@ -206,10 +206,10 @@ est_S_Star_Plus_MethodA <- function(X, A, Z, Y, T) { # nolint
   phi0_x <- predict(fit_y0_x_z0,
                     newdata = data.frame(X, do.call(cbind, Zs0_pred)))
   Y_clean <- NA_replace(Y)             # nolint
-  res <- sum(T * A[, n_time_points] * Y_clean - T * A[, n_time_points] *
-               phi0_x) / sum(T * A[, n_time_points])
+  res <- sum(TRT * A[, n_time_points] * Y_clean - TRT * A[, n_time_points] *
+               phi0_x) / sum(TRT * A[, n_time_points])
 
-  g1 <- (1 - T) * A[, n_time_points] * (Y - psi0_x_z0) *
+  g1 <- (1 - TRT) * A[, n_time_points] * (Y - psi0_x_z0) *
     cbind(rep(1, n), X, z_cbind)
   g1[A[, n_time_points] == 0, ] <- 0
   covariate_long <- lapply(models_z_x, model.matrix.lm)
@@ -222,29 +222,29 @@ est_S_Star_Plus_MethodA <- function(X, A, Z, Y, T) { # nolint
                              dim(models_z_x[[i]]$model[[1]])[2]))
   }
 
-  g4 <- T * A[, n_time_points] * (Y_clean - phi0_x)
-  g5 <- T * A[, n_time_points]
+  g4 <- TRT * A[, n_time_points] * (Y_clean - phi0_x)
+  g5 <- TRT * A[, n_time_points]
 
   # Estimating expection of deriatives
-  partial_g4_beta <- -c(mean(T * A[, n_time_points]),
-                        colMeans(T * A[, n_time_points] * X),
-                        colMeans(T * A[, n_time_points] *
+  partial_g4_beta <- -c(mean(TRT * A[, n_time_points]),
+                        colMeans(TRT * A[, n_time_points] * X),
+                        colMeans(TRT * A[, n_time_points] *
                                    do.call(cbind, Zs0_pred)))
   partial_g4_alpha <- list()
   for (i in 1:n_time_points) {
     partial_g4_alpha_z <- matrix(-beta0_hat[paste("Z_", i, "_",
                           1:dim(Z[[i]])[2], sep = "")], ncol = 1) *
-      mean(T * A[, n_time_points])
+      mean(TRT * A[, n_time_points])
     partial_g4_alpha_zx <- matrix(-beta0_hat[paste("Z_", i, "_",
                           1:dim(Z[[i]])[2], sep = "")], ncol = 1) %*%
-      colMeans(T * A[, n_time_points] * X)
+      colMeans(TRT * A[, n_time_points] * X)
     partial_g4_alpha_zt <- matrix(0, nrow = dim(Z[[i]])[2], ncol = 1)
     partial_g4_alpha[[i]] <- cbind(partial_g4_alpha_z,
                                    partial_g4_alpha_zx,
                                    partial_g4_alpha_zt)
   }
   covariate <- cbind(rep(1, n), X, z_cbind)
-  covariate_T0A0 <- covariate[T == 0 & A[, n_time_points] == 1, ]   # nolint
+  covariate_T0A0 <- covariate[TRT == 0 & A[, n_time_points] == 1, ]   # nolint
 
   partial_g1_beta <- -t(covariate_T0A0) %*% covariate_T0A0 / n
 
@@ -267,12 +267,13 @@ est_S_Star_Plus_MethodA <- function(X, A, Z, Y, T) { # nolint
   }
   se <- sd(as.numeric(se_main + se_g2) + as.numeric(1 / mean(g5) *
         (g4 - tau_est * g5))) / sqrt(n)
-  res1 <- sum(T * A[, n_time_points] * Y_clean) / sum(T * A[, n_time_points])
-  res0 <- sum(T * A[, n_time_points] * phi0_x) / sum(T * A[, n_time_points])
-  se1 <- sd(1 / mean(g5) * (T * A[, n_time_points] *
+  res1 <- sum(TRT * A[, n_time_points] * Y_clean) /
+    sum(TRT * A[, n_time_points])
+  res0 <- sum(TRT * A[, n_time_points] * phi0_x) / sum(TRT * A[, n_time_points])
+  se1 <- sd(1 / mean(g5) * (TRT * A[, n_time_points] *
                               Y_clean - res1 * g5)) / sqrt(n)
   se0 <- sd(as.numeric(se_main + se_g2) + as.numeric(1 / mean(g5) *
-          (T * A[, n_time_points] * phi0_x - res0 * g5))) / sqrt(n)
+          (TRT * A[, n_time_points] * phi0_x - res0 * g5))) / sqrt(n)
   rval <- list(trt_diff = res,
              se = se,
              res1 = res1,

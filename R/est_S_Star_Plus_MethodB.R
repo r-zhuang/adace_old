@@ -16,8 +16,8 @@
 #' affect the probability of adherence. For each matrix, the structure is the
 #' same as variable X.
 #' @param Y Numeric vector of the final outcome (E.g., primary endpoint).
-#' @param T Numeric vector of treatment assignment. T=0 for the control group
-#' and T =1 for the experimental treatment group.
+#' @param TRT Numeric vector of treatment assignment. TRT=0 for the control
+#' group and TRT =1 for the experimental treatment group.
 #'
 #' @return A list containing the following components:
 #'   \item{trt_diff}{Estimate of treatment difference for S_{*+} using Method B}
@@ -81,24 +81,24 @@
 #'  gamma3 = c(1, -0.1, 0.2, 0.2, 0.2, 0.2, rep(-2.5/5,5))   #setting 1
 #'  sd_z_x = 0.4
 #'  X = mvrnorm(n, mu=c(1,5,6,7,8), Sigma=diag(1,5))
-#'  T = rbinom(n, size = 1,  prob = 0.5)
+#'  TRT = rbinom(n, size = 1,  prob = 0.5)
 #'  Z0_1 = alpha1[1,]+(X%*%alpha1[2:6,])           + mvrnorm(n, mu = rep(0,3),
 #'  Sigma = diag(sd_z_x,3))
 #'  Z1_1 = alpha1[1,]+(X%*%alpha1[2:6,])+alpha1[7,] + mvrnorm(n, mu = rep(0,3),
 #'  Sigma = diag(sd_z_x,3))
-#'  Z_1  = Z1_1 * T+Z0_1 * (1-T)
+#'  Z_1  = Z1_1 * TRT+Z0_1 * (1-TRT)
 #'
 #'  Z0_2 = alpha2[1,]+(X%*%alpha2[2:6,])           + mvrnorm(n, mu = rep(0,4),
 #'  Sigma = diag(sd_z_x,4))
 #'  Z1_2 = alpha2[1,]+(X%*%alpha2[2:6,])+alpha2[7,] + mvrnorm(n, mu = rep(0,4),
 #'  Sigma = diag(sd_z_x,4))
-#'  Z_2  = Z1_2 * T + Z0_2 * (1-T)
+#'  Z_2  = Z1_2 * TRT + Z0_2 * (1-TRT)
 #'
 #'  Z0_3 = alpha3[1,]+(X%*%alpha3[2:6,])           + mvrnorm(n, mu = rep(0,5),
 #'  Sigma = diag(sd_z_x,5))
 #'  Z1_3 = alpha3[1,]+(X%*%alpha3[2:6,])+alpha3[7,] + mvrnorm(n, mu = rep(0,5),
 #'  Sigma = diag(sd_z_x,5))
-#'  Z_3  = Z1_3 * T + Z0_3 * (1-T)
+#'  Z_3  = Z1_3 * TRT + Z0_3 * (1-TRT)
 #'  Z = list(Z_1, Z_2, Z_3)
 #'  Y0 = (beta[1]+(X %*% beta[2:6]) + Z0_1 %*% matrix(beta[7:9], ncol = 1) +
 #'  Z0_2 %*% matrix(beta[10:13], ncol = 1) + Z0_3 %*% beta[14:18] +
@@ -106,32 +106,32 @@
 #'  Y1 = (beta[1] + (X %*% beta[2:6]) + Z1_1 %*% matrix(beta[7:9], ncol = 1) +
 #'  Z1_2 %*% matrix(beta[10:13], ncol = 1) + Z1_3 %*% beta[14:18] + beta_T +
 #'  rnorm(n, mean = 0, sd = 0.3))[,1]
-#'  Y  = Y1 * T + Y0 * (1 - T)
+#'  Y  = Y1 * TRT + Y0 * (1 - TRT)
 #'
 #'  A0_1 = rbinom(n, size = 1, prob = 1 / (1 + exp(-(gamma1[1] +
 #'  (X %*% gamma1[2:6]) + Z0_1 %*% matrix(gamma1[7:9], ncol = 1))[,1])))
 #'  A1_1 = rbinom(n, size = 1, prob = 1/(1 + exp(-(gamma1[1] +
 #'  (X %*% gamma1[2:6]) + Z1_1 %*% matrix(gamma1[7:9], ncol = 1))[,1])))
-#'  A_1  = A1_1 * T + A0_1 * (1 - T)
+#'  A_1  = A1_1 * TRT + A0_1 * (1 - TRT)
 #'
 #'  A0_2 = rbinom(n, size = 1, prob = 1/(1 + exp(-(gamma2[1] +
 #'  (X %*% gamma2[2:6]) + Z0_2 %*% matrix(gamma2[7:10], ncol = 1))[,1]))) * A0_1
 #'  A1_2 = rbinom(n, size = 1, prob = 1/(1 + exp(-(gamma2[1] +
 #'  (X %*% gamma2[2:6]) + Z1_2 %*% matrix(gamma2[7:10], ncol = 1))[,1]))) * A1_1
-#'  A_2  = A1_2 * T + A0_2 * (1 - T)
+#'  A_2  = A1_2 * TRT + A0_2 * (1 - TRT)
 #'
 #'  A0_3 = rbinom(n, size = 1, prob = 1/(1 + exp(-(gamma3[1] +
 #'  (X %*% gamma3[2:6]) + Z0_3 %*% matrix(gamma3[7:11], ncol = 1))[,1]))) * A0_2
 #'  A1_3 = rbinom(n, size = 1, prob = 1/(1 + exp(-(gamma3[1] +
 #'  (X %*% gamma3[2:6]) + Z1_3 %*% matrix(gamma3[7:11], ncol = 1))[,1]))) * A1_2
-#'  A_3  = A1_3 * T + A0_3 * (1 - T)
+#'  A_3  = A1_3 * TRT + A0_3 * (1 - TRT)
 #'  A = cbind(A_1, A_2, A_3)
 #'
 #'  Z[[2]][A_1 == 0] <- NA
 #'  Z[[3]][A_2 == 0] <- NA
 #'  Y[A_3 == 0]   <- NA
 #'  # estimate the treatment difference
-#'  fit <- est_S_Star_Plus_MethodA(X, A, Z, Y, T)
+#'  fit <- est_S_Star_Plus_MethodA(X, A, Z, Y, TRT)
 #'  fit
 #'  # Calculate the true values
 #'  true1 =  mean(Y1[A1_3 == 1])
@@ -143,9 +143,9 @@
 #'
 #' @export
 
-est_S_Star_Plus_MethodB <- function(X, A, Z, Y, T){                  # nolint
+est_S_Star_Plus_MethodB <- function(X, A, Z, Y, TRT){                  # nolint
   Y <- as.numeric(Y) # nolint
-  T <- as.numeric(T) # nolint
+  TRT <- as.numeric(TRT) # nolint
   Y[is.na(Y)] <- 0
   X <- matrix(X, nrow = length(Y)) # nolint
   A <- matrix(A, nrow = length(Y)) # nolint
@@ -169,7 +169,7 @@ est_S_Star_Plus_MethodB <- function(X, A, Z, Y, T){                  # nolint
     Z_col_names[[i]] <- paste(part1, 1:dim(Z[[i]])[2], sep = "")
   }
   colnames(Z_mat) <- unlist(Z_col_names)
-  data <- data.frame(X, T, Z_mat, Y, A)
+  data <- data.frame(X, TRT, Z_mat, Y, A)
 
   # Model adherence given X, Z using a logistic model
   form1 <- formula(paste("A_1 ~ ",
@@ -197,7 +197,7 @@ est_S_Star_Plus_MethodB <- function(X, A, Z, Y, T){                  # nolint
   models_Z_X <- list()                                            # nolint
   sigma_mats_Z <- list()                                          # nolint
   for (i in 1:n_time_points) {
-    models_Z_X[[i]] <- lm(Z_mat[, Z_col_names[[i]]] ~ X + T)
+    models_Z_X[[i]] <- lm(Z_mat[, Z_col_names[[i]]] ~ X + TRT)
     if (dim(Z[[i]])[2] > 1) {
       sigma_mats_Z[[i]] <- diag(apply(models_Z_X[[i]]$residuals, 2, var))
     } else {
@@ -210,7 +210,7 @@ est_S_Star_Plus_MethodB <- function(X, A, Z, Y, T){                  # nolint
   for (i in 1:n_time_points) {
 
     Zs_pred[[i]] <- predict(models_Z_X[[i]],
-                            newdata = data.frame(X, T = rep(1, n)))
+                            newdata = data.frame(X, TRT = rep(1, n)))
   }
 
   # Estimate alpha of Z_i given T for 1 (intercept) and Xs
@@ -271,10 +271,11 @@ est_S_Star_Plus_MethodB <- function(X, A, Z, Y, T){                  # nolint
   for (i in 1:n_time_points) {
     prod_A <- prod_A * preds_A_XZ_clean[[i]]                 # nolint
   }
-  res_main <- sum(T * A[, n_time_points] * Y - (1 - T) * A[, n_time_points] *
-                    Expect_A_X*Y / prod_A) / sum(T * A[, n_time_points])    # nolint
-  residual <- (sum((1 - T) * A[, n_time_points] * Expect_A_X * Y / prod_A) /
-                 sum(T * A[, n_time_points])) * (1 - sum(T) / sum(1 - T))
+  res_main <- sum(TRT * A[, n_time_points] * Y - (1 - TRT) *
+                    A[, n_time_points] *
+                    Expect_A_X*Y / prod_A) / sum(TRT * A[, n_time_points])    # nolint
+  residual <- (sum((1 - TRT) * A[, n_time_points] * Expect_A_X * Y / prod_A) /
+                 sum(TRT * A[, n_time_points])) * (1 - sum(TRT) / sum(1 - TRT))
   estimator <- res_main + residual
 
   # Prepare for the plug-in variance estimator
@@ -315,15 +316,15 @@ est_S_Star_Plus_MethodB <- function(X, A, Z, Y, T){                  # nolint
 
   # g4 = (1 -T)h(x, \gamma, \alpha)/g(x, z, \gamma), here
   # we use an equivalent form of the above function
-  g4 <- T * A[, n_time_points] * Y - (1 - T) * A[, n_time_points] *
+  g4 <- TRT * A[, n_time_points] * Y - (1 - TRT) * A[, n_time_points] *
     Expect_A_X * Y / prod_A
 
   # function g5 = TA
-  g5 <- T * A[, n_time_points]
+  g5 <- TRT * A[, n_time_points]
 
   # Estimating expection of deriatives using sample averages
   partial_g4_alpha <- list()
-  part1_partial <- (1 - T) * A[, n_time_points] * Y / (prod_A)
+  part1_partial <- (1 - TRT) * A[, n_time_points] * Y / (prod_A)
   for (i in 1:n_time_points) {
     dim_z <- dim(Z[[i]])[2]
     partial_vec <- matrix(part1_partial * (Expect_AZ_X[[i]] - Expect_A_X *
@@ -340,7 +341,7 @@ est_S_Star_Plus_MethodB <- function(X, A, Z, Y, T){                  # nolint
 
   partial_g4_gamma <- list()
   for (i in 1:n_time_points) {
-    constant <- (1 - T) * A[, n_time_points] * Y /
+    constant <- (1 - TRT) * A[, n_time_points] * Y /
       (prod_A / preds_A_XZ_clean[[i]])
     vec1 <- (Expect_AA_X[[i]] * preds_A_XZ_clean[[i]] -
                Expect_A_X * preds_A_XZ_clean[[i]] *
@@ -381,7 +382,7 @@ est_S_Star_Plus_MethodB <- function(X, A, Z, Y, T){                  # nolint
   # Calculate plug-in variance estimator for S_{*+} without residual term
   tau_est <- estimator
   data_long <- cbind(data, subj = seq_len(nrow(data)))
-  data_long <- reshape2::melt(data_long, id.vars = c(X_col_names, "T", "Y",
+  data_long <- reshape2::melt(data_long, id.vars = c(X_col_names, "TRT", "Y",
                                                     A_col_names, "subj"),
                              variable.name = "Z")
   temp <- list()
@@ -424,16 +425,17 @@ est_S_Star_Plus_MethodB <- function(X, A, Z, Y, T){                  # nolint
   }
   se_main1 <- se_main + 1 / mean(g5) * (g4 - tau_est * g5)
 
-  tau0_est <- sum((1 - T) * A[, n_time_points] * Expect_A_X * Y /
-                    (prod_A)) / sum(T * A[, n_time_points]) - residual
+  tau0_est <- sum((1 - TRT) * A[, n_time_points] * Expect_A_X * Y /
+                    (prod_A)) / sum(TRT * A[, n_time_points]) - residual
 
   #use delta-method for se_residual
-  se_residual <- - tau0_est * 1 / (1 - mean(T))^2 * (T - mean(T))
+  se_residual <- - tau0_est * 1 / (1 - mean(TRT))^2 * (TRT - mean(TRT))
   se <- sd(se_main1 + se_residual) / sqrt(n)
-  res1 <- sum(T * A[, n_time_points] * Y) / sum(T * A[, n_time_points])
-  res0 <- sum((1 - T) * A[, n_time_points] * Expect_A_X * Y / prod_A) /
-    sum(T * A[, n_time_points]) * (sum(T) / sum(1 - T))
-  se1  <-  sd(1 / mean(g5) * (T * A[, n_time_points] * Y - res1 * g5)) / sqrt(n)
+  res1 <- sum(TRT * A[, n_time_points] * Y) / sum(TRT * A[, n_time_points])
+  res0 <- sum((1 - TRT) * A[, n_time_points] * Expect_A_X * Y / prod_A) /
+    sum(TRT * A[, n_time_points]) * (sum(TRT) / sum(1 - TRT))
+  se1  <-  sd(1 / mean(g5) * (TRT * A[, n_time_points] * Y - res1 * g5)) /
+    sqrt(n)
 
   se_main_se0 <- 0
   for (i in 1:n_time_points) {
@@ -455,7 +457,7 @@ est_S_Star_Plus_MethodB <- function(X, A, Z, Y, T){                  # nolint
       partial_g4_gamma[[i]] / mean(g5)
   }
 
-  se0 <- se_main_se0 + ((1 - T) * A[, n_time_points] * Expect_A_X * Y /
+  se0 <- se_main_se0 + ((1 - TRT) * A[, n_time_points] * Expect_A_X * Y /
                           (prod_A) - res0 * g5 - se_residual) / mean(g5)
   se0 <- sd(se0) / sqrt(n)
   RVAL <- list(trt_diff = estimator,                                  # nolint

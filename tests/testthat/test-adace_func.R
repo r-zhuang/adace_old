@@ -3,7 +3,7 @@ test_that("adace main function", {
   library(MASS)
   library(pracma)
   set.seed(123)
-  n <-  300
+  n <-  200
   alpha1 <- matrix(rep(c(2.3, -0.3, -0.01, 0.02,
                          0.03, 0.04, -0.4), 3), ncol = 3)
   alpha2 <- matrix(rep(c(2.3, -0.3, -0.01, 0.02,
@@ -18,23 +18,23 @@ test_that("adace main function", {
   gamma3 <- c(1, -0.1, 0.2, 0.2, 0.2, 0.2, rep(-2.5 / 5, 5))   #setting 1
   sd_z_x <- 0.4
   X <- mvrnorm(n, mu = c(1, 5, 6, 7, 8), Sigma = diag(1, 5))   # nolint
-  T <- rbinom(n, size = 1,  prob = 0.5)                        # nolint
+  TRT <- rbinom(n, size = 1,  prob = 0.5)                        # nolint
   Z0_1 <- alpha1[1, ] + (X %*% alpha1[2:6, ]) +                # nolint
     mvrnorm(n, mu = rep(0, 3), Sigma = diag(sd_z_x, 3))
   Z1_1 <- alpha1[1, ] + (X %*% alpha1[2:6, ]) + alpha1[7, ] +           # nolint
     mvrnorm(n, mu = rep(0, 3), Sigma = diag(sd_z_x, 3))
-  Z_1  <- Z1_1 * T + Z0_1 * (1 - T)                                     # nolint
+  Z_1  <- Z1_1 * TRT + Z0_1 * (1 - TRT)                                     # nolint
   Z0_2 <- alpha2[1, ] + (X %*% alpha2[2:6, ]) +                         # nolint
     mvrnorm(n, mu = rep(0, 4), Sigma = diag(sd_z_x, 4))
   Z1_2 <- alpha2[1, ] + (X %*% alpha2[2:6, ]) + alpha2[7, ] +           # nolint
     mvrnorm(n, mu = rep(0, 4), Sigma = diag(sd_z_x, 4))
-  Z_2  <- Z1_2 * T + Z0_2 * (1 - T)                                     # nolint
+  Z_2  <- Z1_2 * TRT + Z0_2 * (1 - TRT)                                     # nolint
 
   Z0_3 <- alpha3[1, ] + (X %*% alpha3[2:6, ]) +                         # nolint
     mvrnorm(n, mu = rep(0, 5), Sigma = diag(sd_z_x, 5))
   Z1_3 <- alpha3[1, ] + (X %*% alpha3[2:6, ]) + alpha3[7, ] +           # nolint
     mvrnorm(n, mu = rep(0, 5), Sigma = diag(sd_z_x, 5))
-  Z_3  <- Z1_3 * T + Z0_3 * (1 - T)                                     # nolint
+  Z_3  <- Z1_3 * TRT + Z0_3 * (1 - TRT)                                     # nolint
   Z <- list(Z_1, Z_2, Z_3)                                              # nolint
   Y0 <- (beta[1] + (X %*% beta[2:6]) + Z0_1 %*% matrix(beta[7:9], ncol = 1) +   # nolint
            Z0_2 %*% matrix(beta[10:13], ncol = 1) + Z0_3 %*% beta[14:18] +
@@ -42,13 +42,13 @@ test_that("adace main function", {
   Y1 <- (beta[1] + (X %*% beta[2:6]) + Z1_1 %*% matrix(beta[7:9], ncol = 1) +   # nolint
            Z1_2 %*% matrix(beta[10:13], ncol = 1) + Z1_3 %*% beta[14:18] +
            beta_t + rnorm(n, mean = 0, sd = 0.3))[, 1]
-  Y <- Y1 * T + Y0 * (1 - T)                                            # nolint
+  Y <- Y1 * TRT + Y0 * (1 - TRT)                                            # nolint
 
   A0_1 <- rbinom(n, size = 1, prob = 1 / (1 + exp(-(gamma1[1] +                 # nolint
           (X %*% gamma1[2:6]) + Z0_1 %*% matrix(gamma1[7:9], ncol = 1))[, 1])))
   A1_1 <- rbinom(n, size = 1, prob = 1 / (1 + exp(-(gamma1[1] +                 # nolint
           (X %*% gamma1[2:6]) + Z1_1 %*% matrix(gamma1[7:9], ncol = 1))[, 1])))
-  A_1 <- A1_1 * T + A0_1 * (1 - T)                                              # nolint
+  A_1 <- A1_1 * TRT + A0_1 * (1 - TRT)                                              # nolint
 
   A0_2 <- rbinom(n, size = 1, prob = 1 / (1 + exp(-(gamma2[1] +                 # nolint
         (X %*% gamma2[2:6]) + Z0_2 %*%
@@ -56,7 +56,7 @@ test_that("adace main function", {
   A1_2 <- rbinom(n, size = 1, prob = 1 / (1 + exp(-(gamma2[1] +                 # nolint
         (X %*% gamma2[2:6]) + Z1_2 %*%
           matrix(gamma2[7:10], ncol = 1))[, 1]))) * A1_1
-  A_2  <- A1_2 * T + A0_2 * (1 - T)                                             # nolint
+  A_2  <- A1_2 * TRT + A0_2 * (1 - TRT)                                             # nolint
 
   A0_3 <- rbinom(n, size = 1, prob = 1 / (1 + exp(-(gamma3[1] +                 # nolint
           (X %*% gamma3[2:6]) + Z0_3 %*%
@@ -64,17 +64,17 @@ test_that("adace main function", {
   A1_3 <- rbinom(n, size = 1, prob = 1 / (1 + exp(-(gamma3[1] +                 # nolint
           (X %*% gamma3[2:6]) + Z1_3 %*%
             matrix(gamma3[7:11], ncol = 1))[, 1]))) * A1_2
-  A_3 <- A1_3 * T + A0_3 * (1 - T)                                              # nolint
+  A_3 <- A1_3 * TRT + A0_3 * (1 - TRT)                                              # nolint
   A <- cbind(A_1, A_2, A_3)                                                     # nolint
 
   Z[[2]][A_1 == 0] <- NA
   Z[[3]][A_2 == 0] <- NA
   Y[A_3 == 0] <- NA
   # estimate the treatment difference
-  fit1 <- est_S_Plus_Plus_MethodA(X, A, Z, Y, T)
-  fit2 <- est_S_Star_Plus_MethodA(X, A, Z, Y, T)
-  fit3 <- est_S_Plus_Plus_MethodB(X, A, Z, Y, T)
-  fit4 <- est_S_Star_Plus_MethodB(X, A, Z, Y, T)
+  fit1 <- est_S_Plus_Plus_MethodA(X, A, Z, Y, TRT)
+  fit2 <- est_S_Star_Plus_MethodA(X, A, Z, Y, TRT)
+  fit3 <- est_S_Plus_Plus_MethodB(X, A, Z, Y, TRT)
+  fit4 <- est_S_Star_Plus_MethodB(X, A, Z, Y, TRT)
   # Test class
   expect_equal(class(fit1), "list")
   expect_equal(class(fit2), "list")
@@ -91,13 +91,13 @@ test_that("adace main function", {
   expect_equal(length(fit3), 6)
   expect_equal(length(fit4), 6)
   # Test warning message
-  Y <- Y1 * T + Y0 * (1 - T)                                                    # nolint
-  A_3[101:300] <- 0
+  Y <- Y1 * TRT + Y0 * (1 - TRT)                                                    # nolint
+  A_3[101:200] <- 0
   Y[A_3 == 0] <- NA
-  message1 <- capture_message(fit1 <- est_S_Plus_Plus_MethodA(X, A, Z, Y, T))
+  message1 <- capture_message(fit1 <- est_S_Plus_Plus_MethodA(X, A, Z, Y, TRT))
   expect_equal(message1$message,
                "prediction from a rank-deficient fit may be misleading")
-  message2 <- capture_message(fit2 <- est_S_Star_Plus_MethodA(X, A, Z, Y, T))
+  message2 <- capture_message(fit2 <- est_S_Star_Plus_MethodA(X, A, Z, Y, TRT))
   expect_equal(message2$message,
                "prediction from a rank-deficient fit may be misleading")
   #### Test utility function ####
@@ -136,7 +136,7 @@ test_that("adace main function", {
   beta_t <- -0.2
   sd_z_x <- 0.4
   X <- mvrnorm(n, mu = c(1, 5, 6, 7, 8), Sigma = diag(1, 5)) # nolint
-  T <- rbinom(n, size = 1,  prob = 0.5)                      # nolint
+  TRT <- rbinom(n, size = 1,  prob = 0.5)                      # nolint
   Y_constant <- beta[1] + (X %*% beta[2:6])                  # nolint
   Y0 <- 0                                                    # nolint
   Y1 <- 0                                                    # nolint
@@ -149,7 +149,7 @@ test_that("adace main function", {
       mvrnorm(n, mu = rep(0, p_z), Sigma = diag(sd_z_x, p_z))
     Z1 <- alphas[[i]][1, ] + (X %*% alphas[[i]][2:6, ]) + alphas[[i]][7, ] +    # nolint
       mvrnorm(n, mu = rep(0, p_z), Sigma = diag(sd_z_x, p_z))
-    Z[[i]] <- Z1 * T + Z0 * (1-T)                                               # nolint
+    Z[[i]] <- Z1 * TRT + Z0 * (1-TRT)                                               # nolint
     Y0 <- (Y0 + Z0 %*% matrix(beta[(7 + (i - 1) * p_z): (6 + p_z * i)],         # nolint
                               ncol = 1))[, 1]                                  # nolint
     Y1 <- (Y1 + Z1 %*% matrix(beta[(7 + (i - 1) * p_z): (6 + p_z * i)],         # nolint
@@ -176,14 +176,14 @@ test_that("adace main function", {
         A1[, i - 1]
 
     }
-    A[, i] <- A1[, i] * T + A0[, i] * (1 - T)
+    A[, i] <- A1[, i] * TRT + A0[, i] * (1 - TRT)
   }
   Y0 <- Y0 + rnorm(n, mean = 0, sd = 0.3) + Y_constant                  # nolint
   Y1 <- Y1 + beta_t  + rnorm(n, mean = 0, sd = 0.3) + Y_constant        # nolint
   true1_i <- mean((Y1)[A1[, n_t] == 1 & A0[, n_t] == 1], na.rm = TRUE)
   true0_i <- mean((Y0)[A1[, n_t] == 1 & A0[, n_t] == 1], na.rm = TRUE)
 
-  Y <- as.vector(Y1 * T + Y0 * (1 - T))                                 # nolint
+  Y <- as.vector(Y1 * TRT + Y0 * (1 - TRT))                                 # nolint
 
   for (i in 2:n_t) {
     Z[[i]][A[, (i - 1)] == 0, ] <- NA
@@ -191,10 +191,10 @@ test_that("adace main function", {
 
   Y[A[, n_t] == 0] <- NA
   # estimate the treatment difference
-  fit1 <- est_S_Plus_Plus_MethodA(X, A, Z, Y, T)
-  fit2 <- est_S_Star_Plus_MethodA(X, A, Z, Y, T)
-  fit3 <- est_S_Plus_Plus_MethodB(X, A, Z, Y, T)
-  fit4 <- est_S_Star_Plus_MethodB(X, A, Z, Y, T)
+  fit1 <- est_S_Plus_Plus_MethodA(X, A, Z, Y, TRT)
+  fit2 <- est_S_Star_Plus_MethodA(X, A, Z, Y, TRT)
+  fit3 <- est_S_Plus_Plus_MethodB(X, A, Z, Y, TRT)
+  fit4 <- est_S_Star_Plus_MethodB(X, A, Z, Y, TRT)
   # Test class
   expect_equal(class(fit1), "list")
   expect_equal(class(fit2), "list")

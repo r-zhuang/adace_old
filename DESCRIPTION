@@ -32,13 +32,17 @@ Authors@R: c(
     family = "Eli Lilly and Company",
     role = "cph"
         )) 
-Imports: reshape2, cubature, MASS, pracma
-Description: Estimate the causal treatment effect for subjects that can adhere to one or both
-  treatments. Given longitudinal data with missing observations, consistent causal effects are 
-  calculated. Unobserved potential outcomes are estimated through direct integration. 
+Imports: reshape2, pracma
+Description: Estimate the causal treatment effect for subjects that can adhere 
+    to one or both of the treatments. Given longitudinal data with missing 
+    observations, consistent causal effects are calculated. Unobserved potential
+    outcomes are estimated through direct integration as described in: 
+    Qu et al., (2019) <doi:10.1080/19466315.2019.1700157> and 
+    Zhang et. al., (2021) <doi:10.1080/19466315.2021.1891965>. 
 License: GPL (>= 3)
 Encoding: UTF-8
 RoxygenNote: 7.1.1
+Depends: R (>= 4.0.0)
 Suggests: 
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0), cubature (>= 2.0.4), MASS (>= 7.3-55)
 Config/testthat/edition: 3
