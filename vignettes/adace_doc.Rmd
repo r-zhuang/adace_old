@@ -1,0 +1,139 @@
+---
+title: "adace example"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(adace)
+```
+
+## Setup
+
+The adace R package can be installed directly from CRAN using install.packages("adace") and then loaded into the the environment using library(adace). The package does have some dependencies, including reshape2, parcma, cuature, and MASS. It is recommended to install these packages if asked when installing adace.
+
+
+## Functions in adace
+
+There are 4 user functions in the package. Each of the functions calculate the adherers average causal estimate for a specified method and population. For example the function *est_S_Plus_Plus_MethodA* calculates the adherers estimator for Method A using population S++, the patients that can adhere to both treatment and control. Additional internal package functions are also listed in the package documentation and are utility functions called inside the user functions.
+
+All user functions contain the same set of arguments. The arguments are the following:
+
+1. **X**: Matrix of baseline covariates
+2. **A**: Matrix of adherence indicators
+3. **Z**: List of matrices of the intermediate outcome
+4. **Y**: Vector of the primary endpoint
+5. **TRT**: Vector of a binary treatment assignment.
+
+Note that the functions in adace are expected to be used given a user supplied dataset. See the following articles for more details on data simulation and the estimation procedure:
+
+1. Qu, Yongming, et al. "A general framework for treatment effect estimators considering patient adherence." *Statistics in Biopharmaceutical Research* 12.1 (2020): 1-18.
+
+2. Zhang, Ying, et al. "Statistical inference on the estimators of the adherer average causal effect." *Statistics in Biopharmaceutical Research* (2021): 1-4.
+
+
+## Simulated data example
+
+The following provides a simple example using simulated data to demonstrate the use of the package and the output it provides. Consider a clinical trial with a treatment and control. Each subject has 5 baseline covariates and subjects are followed up at 3 intermediate timepoints. At each intermediate timepoint, 3 intermediate measurements are measured for each patient. Lastly, the final endpoint occurs sometime after the 3rd follow up visit. However, at each timepoint, patients may experience an intercurrent event and drop out from the study. Therefore, the adherence of each patient is also measured at each timepoint. See the data generating model below.
+
+The goal is to estimate the adherers average causal effect using Method A for population S++. Therefore, we generate data for X, Y, Z, TRT, and A. The data is first generated for all potential outcomes and then cleaned based on adherence status to create the observed data. We then use the function *est_S_Plus_Plus_MethodA* to get the estimate of the treatment effect and then compare it to the true treatment effect, calculated using the complete data with all potential outcomes. First we generate all potential outcome data as such:
+
+```{r}
+library(MASS)
+n = 1000
+alpha1 = matrix(rep(c(2.3, -0.3, -0.01, 0.02, 0.03, 0.04, -0.4),3),ncol=3)
+alpha2 = matrix(rep(c(2.3, -0.3, -0.01, 0.02, 0.03, 0.04, -0.9),4),ncol=4)
+alpha3 = matrix(rep(c(2.3, -0.3, -0.01, 0.02, 0.03, 0.04, -0.9),5),ncol=5)
+beta = c(0.2, -0.3, -0.01, 0.02, 0.03, 0.04, rep(0.02,3),
+rep(0.04,4), rep(0.07,5))
+beta_T = -0.2
+gamma1 = c(1, -0.1, 0.2, 0.2, 0.2, 0.2, rep(-1/3,3)) #setting 1
+gamma2 = c(1, -0.1, 0.2, 0.2, 0.2, 0.2, rep(-2/4,4)) #setting 1
+gamma3 = c(1, -0.1, 0.2, 0.2, 0.2, 0.2, rep(-2.5/5,5)) #setting 1
+sd_z_x = 0.4
+X = mvrnorm(n, mu=c(1,5,6,7,8), Sigma=diag(1,5))
+TRT = rbinom(n, size = 1, prob = 0.5)
+Z0_1 = alpha1[1,]+(X%*%alpha1[2:6,]) + mvrnorm(n, mu = rep(0,3),
+Sigma = diag(sd_z_x,3))
+Z1_1 = alpha1[1,]+(X%*%alpha1[2:6,])+alpha1[7,] + mvrnorm(n, mu = rep(0,3),
+Sigma = diag(sd_z_x,3))
+Z_1 = Z1_1 * TRT+Z0_1 * (1-TRT)
+Z0_2 = alpha2[1,]+(X%*%alpha2[2:6,]) + mvrnorm(n, mu = rep(0,4),
+Sigma = diag(sd_z_x,4))
+Z1_2 = alpha2[1,]+(X%*%alpha2[2:6,])+alpha2[7,] + mvrnorm(n, mu = rep(0,4),
+Sigma = diag(sd_z_x,4))
+Z_2 = Z1_2 * TRT + Z0_2 * (1-TRT)
+Z0_3 = alpha3[1,]+(X%*%alpha3[2:6,]) + mvrnorm(n, mu = rep(0,5),
+Sigma = diag(sd_z_x,5))
+Z1_3 = alpha3[1,]+(X%*%alpha3[2:6,])+alpha3[7,] + mvrnorm(n, mu = rep(0,5),
+Sigma = diag(sd_z_x,5))
+Z_3 = Z1_3 * TRT + Z0_3 * (1-TRT)
+Z = list(Z_1, Z_2, Z_3)
+Y0 = (beta[1]+(X %*% beta[2:6]) + Z0_1 %*% matrix(beta[7:9], ncol = 1) +
+Z0_2 %*% matrix(beta[10:13], ncol = 1) + Z0_3 %*% beta[14:18] +
+rnorm(n, mean = 0, sd = 0.3))[,1]
+Y1 = (beta[1] + (X %*% beta[2:6]) + Z1_1 %*% matrix(beta[7:9], ncol = 1) +
+Z1_2 %*% matrix(beta[10:13], ncol = 1) + Z1_3 %*% beta[14:18] + beta_T +
+rnorm(n, mean = 0, sd = 0.3))[,1]
+Y = Y1 * TRT + Y0 * (1 - TRT)
+A0_1 = rbinom(n, size = 1, prob = 1 / (1 + exp(-(gamma1[1] +
+(X %*% gamma1[2:6]) + Z0_1 %*% matrix(gamma1[7:9], ncol = 1))[,1])))
+A1_1 = rbinom(n, size = 1, prob = 1/(1 + exp(-(gamma1[1] +
+(X %*% gamma1[2:6]) + Z1_1 %*% matrix(gamma1[7:9], ncol = 1))[,1])))
+A_1 = A1_1 * TRT + A0_1 * (1 - TRT)
+A0_2 = rbinom(n, size = 1, prob = 1/(1 + exp(-(gamma2[1] +
+(X %*% gamma2[2:6]) + Z0_2 %*% matrix(gamma2[7:10], ncol = 1))[,1]))) * A0_1
+A1_2 = rbinom(n, size = 1, prob = 1/(1 + exp(-(gamma2[1] +
+(X %*% gamma2[2:6]) + Z1_2 %*% matrix(gamma2[7:10], ncol = 1))[,1]))) * A1_1
+A_2 = A1_2 * TRT + A0_2 * (1 - TRT)
+A0_3 = rbinom(n, size = 1, prob = 1/(1 + exp(-(gamma3[1] +
+(X %*% gamma3[2:6]) + Z0_3 %*% matrix(gamma3[7:11], ncol = 1))[,1]))) * A0_2
+A1_3 = rbinom(n, size = 1, prob = 1/(1 + exp(-(gamma3[1] +
+(X %*% gamma3[2:6]) + Z1_3 %*% matrix(gamma3[7:11], ncol = 1))[,1]))) * A1_2
+A_3 = A1_3 * TRT + A0_3 * (1 - TRT)
+A = cbind(A_1, A_2, A_3)
+```
+
+Then we create the obsered dataset by setting dropouts to contain missing data.
+
+```{r}
+Z[[2]][A_1 == 0] <- NA
+Z[[3]][A_2 == 0] <- NA
+Y[A_3 == 0] <- NA
+```
+
+Note the data structore of each required argument.
+
+```{r}
+str(X)
+str(Z)
+str(Y)
+str(TRT)
+str(A)
+```
+
+Then we simply call the function and obtain our estimates. The package will provide the estimates and standard error for each arm and the treatment effect.
+
+```{r}
+fit <- est_S_Plus_Plus_MethodA(X, A, Z, Y, TRT)
+fit
+```
+
+Finally, we calculate the true values and compare it to our estimated value. 
+
+```{r}
+true1 = mean(Y1[A1_3==1 & A0_3==1])
+true1
+true0 = mean(Y0[A1_3==1 & A0_3==1])
+true0
+true_d = true1 - true0
+true_d
+```
+
+## Tips and Tricks
+
+1. The estimation procedure is sensitive to adherence. Specifically, if there is near perfect or almost no adherence at any of the intermediate timepoints, the standard error cannot be estimated due to matrix inversion. However, the point estimate can still be obtained. In these situations, the standard error can be calculated using a user defined bootstrap. 
+
+2. The estimation procedure assumes that the intermediate timepoints are independent and have a strictly diagonal covariance matrix. Simulation results have show that the coverage probablities with correlated timepoints are low for each treatment arm, but the coverage probability for the treatment effect is good. However, it should be noted that the standard error may not be trusted in this case and should be compared to bootstrap.
+
+3. Most are caused by incompatible data structures of the arguments. The package will try to correct this, but please note the required data structure for each argument.
