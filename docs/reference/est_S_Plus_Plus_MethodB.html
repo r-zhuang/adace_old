@@ -35,7 +35,7 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/adace_doc.html">adace_demo</a>
+      <a href="../articles/adace_doc.html">adace example</a>
     </li>
   </ul></li>
 <li>
@@ -208,33 +208,33 @@ Statistics in Biopharmaceutical Research (2021): 1-4.</p>
 <span class="r-in"> <span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu">est_S_Plus_Plus_MethodB</span><span class="op">(</span><span class="va">X</span>, <span class="va">A</span>, <span class="va">Z</span>, <span class="va">Y</span>, <span class="va">TRT</span><span class="op">)</span></span>
 <span class="r-in"> <span class="va">fit</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $trt_diff</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -0.7463595</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -0.6215287</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $se</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.05245416</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.04992079</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $res1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.012206</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.145307</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $res0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.758566</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.766835</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $se_res1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.04057738</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.03562419</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $se_res0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.04473644</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.04709999</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"> <span class="co"># Calculate the true values</span></span>
 <span class="r-in"> <span class="va">true1</span> <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">Y1</span><span class="op">[</span><span class="va">A1_3</span><span class="op">==</span><span class="fl">1</span> <span class="op">&amp;</span> <span class="va">A0_3</span><span class="op">==</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
 <span class="r-in"> <span class="va">true1</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.102356</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.039802</span>
 <span class="r-in"> <span class="va">true0</span> <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">Y0</span><span class="op">[</span><span class="va">A1_3</span><span class="op">==</span><span class="fl">1</span> <span class="op">&amp;</span> <span class="va">A0_3</span><span class="op">==</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
 <span class="r-in"> <span class="va">true0</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.736083</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.708696</span>
 <span class="r-in"> <span class="va">true_d</span>  <span class="op">=</span>  <span class="va">true1</span> <span class="op">-</span> <span class="va">true0</span></span>
 <span class="r-in"> <span class="va">true_d</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -0.6337268</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -0.6688934</span>
 </code></pre></div>
     </div>
   </div>
